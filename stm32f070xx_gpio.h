@@ -1,0 +1,131 @@
+/*
+ * stm32f070xx_gpio.h
+ *
+ *  Created on: Feb 22, 2024
+ *      Author: User
+ */
+
+#ifndef INC_STM32F070XX_GPIO_H_
+#define INC_STM32F070XX_GPIO_H_
+
+#include "stm32f070rbx.h"
+
+typedef struct{
+	uint8_t PinNumber;                   /*!<possible values from @GPIO_PIN_NUMBER>*/
+	uint8_t PinMode;                    /*!<possible values from @GPIO_PIN_MODES>*/
+	uint8_t PinSpeed;                  /*!<possible values from @GPIO_OUT_TYPES>*/
+	uint8_t PinPuPdControl;           /*!<possible values from @GPIO_PUPD_CONFIG>*/
+	uint8_t PinOPType;
+	uint8_t PinAltFunMode;
+}GPIO_PinConfig_t;
+
+
+
+/*@GPIO_PIN_NUMBER
+ * GPIO Pin numbers
+ */
+#define GPIO_PIN_NO_0          0
+#define GPIO_PIN_NO_1          1
+#define GPIO_PIN_NO_2          2
+#define GPIO_PIN_NO_3          3
+#define GPIO_PIN_NO_4          4
+#define GPIO_PIN_NO_5          5
+#define GPIO_PIN_NO_6          6
+#define GPIO_PIN_NO_7          7
+#define GPIO_PIN_NO_8          8
+#define GPIO_PIN_NO_9          9
+#define GPIO_PIN_NO_10         10
+#define GPIO_PIN_NO_11         11
+#define GPIO_PIN_NO_12         12
+#define GPIO_PIN_NO_13         13
+#define GPIO_PIN_NO_14         14
+#define GPIO_PIN_NO_15         15
+
+/*@GPIO_PIN_MODES
+ * GPIO Pin possible modes
+ */
+#define GPIO_MODE_IN       0
+#define GPIO_MODE_OUT      1
+#define GPIO_MODE_ALTFN    2
+#define GPIO_MODE_ANALOG   3
+#define GPIO_MODE_IT_FT    4  // Interrupt Falling edge
+#define GPIO_MODE_IT_RT    5  // Interupt Rising Edge
+#define GPIO_MODE_IT_RFT   6  // Interrupt both Falling and Rising Edge
+
+
+/*@GPIO_OUT_TYPES
+ * GPIO possible output types
+ */
+#define GPIO_OP_TYPE_PP    0   // Pushpull
+#define GPIO_OP_TYPE_OD    1   // Open drain
+
+
+
+/*@GPIO_OUT_SPEED
+ * GPIO possible output speed
+ */
+
+#define GPIO_LOW_SPEED       0
+#define GPIO_MEDIUM_SPEED    1
+#define GPIO_HIGH_SPEED      2
+
+
+/*@GPIO_PUPD_CONFIG
+ * GPIO pin pull up or pull down configurations
+ */
+
+#define GPIO_NO_PUPD          0
+#define GPIO_PIN_PU           1
+#define GPIO_PIN_PD           2
+
+
+
+/*
+ * Pin configaration for EXTI selection pins
+ */
+#define GPIO_BASEADDR_TO_CODE(x)   ((x==GPIOA) ? 0 :\
+		                            (x==GPIOB) ? 1 :\
+		                            (x==GPIOC) ? 2 :\
+								    (x==GPIOD) ? 3 :\
+		                            (x==GPIOF) ? 5 :0 )
+
+// Handle structure for GPIO pin
+
+typedef struct{
+	// pointer to hold the base addresses of gpio peripheral
+
+	GPIO_RegDef_t *pGPIOx;                    // This holds base addresses of gpio port to which the pin belongs
+	GPIO_PinConfig_t GPIO_PinConfig;         // this holds gpio pin configuration settings
+
+}GPIO_Handle_t;
+
+//APIs supported by this driver
+//**************************************************************
+
+//peripheral clock setup
+
+void GPIO_PCLKControl(GPIO_RegDef_t *pGPIOx, uint32_t EnorDi);
+
+//GPIO Init & De-Init
+
+void GPIO_Init(GPIO_Handle_t *pGPIOHandle);
+void GPIO_DeInit(GPIO_RegDef_t *pGPIOx);
+
+//GPIO data write and read
+
+uint8_t GPIO_ReadFromInputPin(GPIO_RegDef_t *pGPIOx, uint8_t PinNumber);
+uint16_t GPIO_ReadFromInputPort(GPIO_RegDef_t *pGPIOx);
+void GPIO_WriteToOutputPin(GPIO_RegDef_t *pGPIOx, uint8_t PinNumber, uint8_t Value);
+void GPIO_WriteToOutputPort(GPIO_RegDef_t *pGPIOx, uint16_t Value);
+void GPIO_TogglePin(GPIO_RegDef_t *pGPIOx, uint8_t PinNumber);
+
+//GPIO Interrupt config and handling
+
+void GPIO_IRQInterruptConfig(uint8_t IRQNumber, uint8_t EnorDi);
+void GPIO_IRQPriorityConfig(uint8_t IRQNumber,uint8_t IRQPriority);
+void GPIO_IRQHandling(uint8_t PinNumber);
+
+
+
+
+#endif /* INC_STM32F070XX_GPIO_H_ */
