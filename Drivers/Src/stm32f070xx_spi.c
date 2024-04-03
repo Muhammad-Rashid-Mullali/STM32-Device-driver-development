@@ -171,6 +171,24 @@ void Data_Send(SPI_RegDef_t *pSPIx, uint8_t *pTxBuffer, uint32_t Len){
 	{
 		//1.wait until TXE is set
 		 while(GetFlagStatus(pSPIx, SPI_TXE_FLAG) == FLAG_RESET);          //while ( ! (pSPIx->SR & (1 << 1) ) )
+		 
+		 //2.check DS bit in CR2
+		 if(pSPIx->CR2 & (1 << SPI_CR2_DS))
+		 {
+			 //16 bit data size
+			 //1.load data into the DR 
+			 pSPIx->DR = *((uint16_t*)pTxBuffer);
+			 Len--;
+			 Len--;
+			 (uint16_t*)pTxBuffer++;
+		 }
+		 else
+		 {
+			 //8 bit data size
+			 pSPIx->DR = *pTxBuffer;
+			 Len--;
+			 pTxBuffer++;
+		 }
 	}
 }
 void Data_Recieve(SPI_RegDef_t *pSPIx, uint8_t *pRxBuffer, uint32_t Len);
